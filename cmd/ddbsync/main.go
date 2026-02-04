@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/zencoder/ddbsync"
+	"github.com/brightcove/playback_ddbsync"
 )
 
 func main() {
