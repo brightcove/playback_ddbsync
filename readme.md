@@ -1,6 +1,6 @@
 # ddbsync
 
-[![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/zencoder/ddbsync)
+[![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/brightcove/playback_ddbsync)
 [![Build Status](https://img.shields.io/travis/zencoder/ddbsync.svg)](https://travis-ci.org/zencoder/ddbsync)
 [![Coverage Status](https://coveralls.io/repos/zencoder/ddbsync/badge.svg?branch=master)](https://coveralls.io/r/zencoder/ddbsync?branch=master)
 
@@ -29,7 +29,7 @@ package main
 
 import(
 	"time"
-	"github.com/zencoder/ddbsync"
+	"github.com/brightcove/playback_ddbsync"
 )
 
 func main() {
@@ -44,7 +44,7 @@ func main() {
 ```
 
 ```bash
-$ git clone http://github.com/zencoder/ddbsync && cd ddbsync
+$ git clone http://github.com/brightcove/playback_ddbsync && cd ddbsync
 $ glide install
 $ go run main.go
 ```
