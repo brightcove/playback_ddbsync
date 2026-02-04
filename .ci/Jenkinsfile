@@ -14,6 +14,7 @@ TestOnlyPipeline(
 				name : 'Prepare test environment',
 				steps: {
 					container('golang') {
+						sh "git config --global --add safe.directory \"\$(pwd)\""
 						sh 'go mod download'
 					}
 				}
