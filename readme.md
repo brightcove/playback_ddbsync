@@ -50,7 +50,3 @@ $ glide install
 $ go run main.go
 ```
 
-## Related
-
-[ddbsync](https://github.com/ryandotsmith/ddbsync)
-[lock-smith](https://github.com/ryandotsmith/lock-smith)
