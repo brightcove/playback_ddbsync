@@ -65,7 +65,7 @@ func TestDBPutErrorLocked(t *testing.T) {
 	})
 
 	err := db.Acquire(DBValidName, DBValidTTL)
-	assert.Error(t, err)
+	assert.ErrorIs(t, err, ErrLocked)
 }
 
 func TestDBDelete(t *testing.T) {
