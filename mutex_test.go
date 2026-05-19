@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -18,11 +18,9 @@ const (
 	ValidMutexRetryWait = 1 * time.Millisecond
 )
 
-var dynamoInternalErr = awserr.New(
-	dynamodb.ErrCodeInternalServerError,
-	"Dynamo Internal Server Error",
-	errors.New("dynamodb Internal Server Error"),
-)
+var dynamoInternalErr = &types.InternalServerError{
+	Message: aws.String("Dynamo Internal Server Error"),
+}
 
 type mockDB struct{ mock.Mock }
 

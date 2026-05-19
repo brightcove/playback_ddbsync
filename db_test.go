@@ -1,12 +1,14 @@
 package ddbsync
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,10 +25,10 @@ type mockDynamo struct {
 	DeleteItemError  error
 }
 
-func (m mockDynamo) UpdateItem(*dynamodb.UpdateItemInput) (*dynamodb.UpdateItemOutput, error) {
+func (m mockDynamo) UpdateItem(_ context.Context, _ *dynamodb.UpdateItemInput, _ ...func(*dynamodb.Options)) (*dynamodb.UpdateItemOutput, error) {
 	return m.UpdateItemOutput, m.UpdateItemError
 }
-func (m mockDynamo) DeleteItem(*dynamodb.DeleteItemInput) (*dynamodb.DeleteItemOutput, error) {
+func (m mockDynamo) DeleteItem(_ context.Context, _ *dynamodb.DeleteItemInput, _ ...func(*dynamodb.Options)) (*dynamodb.DeleteItemOutput, error) {
 	return m.DeleteItemOutput, m.DeleteItemError
 }
 
@@ -57,14 +59,13 @@ func TestDBPutError(t *testing.T) {
 func TestDBPutErrorLocked(t *testing.T) {
 	t.Parallel()
 	db := newMockedClient(mockDynamo{
-		UpdateItemError: awserr.New(
-			dynamodb.ErrCodeConditionalCheckFailedException,
-			"condition check failed",
-			errors.New("failed")),
+		UpdateItemError: &types.ConditionalCheckFailedException{
+			Message: aws.String("condition check failed"),
+		},
 	})
 
 	err := db.Acquire(DBValidName, DBValidTTL)
-	assert.Error(t, err)
+	assert.ErrorIs(t, err, ErrLocked)
 }
 
 func TestDBDelete(t *testing.T) {
