@@ -29,11 +29,9 @@ func NewDatabase(tableName string, region string, endpoint string, disableSSL bo
 	}
 	var opts []func(*dynamodb.Options)
 	if endpoint != "" {
-		if disableSSL {
-			endpoint = forceHTTPScheme(endpoint)
-		}
+		normalized := normalizeEndpoint(endpoint, disableSSL)
 		opts = append(opts, func(o *dynamodb.Options) {
-			o.BaseEndpoint = aws.String(endpoint)
+			o.BaseEndpoint = aws.String(normalized)
 		})
 	}
 	return &Database{
@@ -42,15 +40,24 @@ func NewDatabase(tableName string, region string, endpoint string, disableSSL bo
 	}
 }
 
-func forceHTTPScheme(endpoint string) string {
-	switch {
-	case strings.HasPrefix(endpoint, "http://"):
+// normalizeEndpoint ensures the endpoint has a scheme, forcing http:// when
+// disableSSL is set (v2 has no DisableSSL flag — scheme is the only knob).
+func normalizeEndpoint(endpoint string, disableSSL bool) string {
+	hasHTTP := strings.HasPrefix(endpoint, "http://")
+	hasHTTPS := strings.HasPrefix(endpoint, "https://")
+	if disableSSL {
+		if hasHTTPS {
+			return "http://" + strings.TrimPrefix(endpoint, "https://")
+		}
+		if !hasHTTP {
+			return "http://" + endpoint
+		}
 		return endpoint
-	case strings.HasPrefix(endpoint, "https://"):
-		return "http://" + strings.TrimPrefix(endpoint, "https://")
-	default:
-		return "http://" + endpoint
 	}
+	if !hasHTTP && !hasHTTPS {
+		return "https://" + endpoint
+	}
+	return endpoint
 }
 
 var _ DBer = (*Database)(nil) // Forces compile time checking of the interface
